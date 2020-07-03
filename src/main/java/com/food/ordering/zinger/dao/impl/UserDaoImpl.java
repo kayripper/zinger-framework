@@ -46,8 +46,8 @@ public class UserDaoImpl implements UserDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    NotifyDaoImpl notifyDaoImpl;
+//    @Autowired
+//    NotifyDaoImpl notifyDaoImpl;
 
     /**
      * Customer Authentication
