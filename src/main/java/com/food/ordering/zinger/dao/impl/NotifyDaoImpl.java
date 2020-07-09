@@ -8,11 +8,17 @@ import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.notification.CustomerPayLoad;
 import com.food.ordering.zinger.model.notification.NotificationModel;
 import com.food.ordering.zinger.model.notification.SellerPayLoad;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,29 +31,29 @@ import java.util.List;
 @Repository
 public class NotifyDaoImpl implements NotifyDao {
 
-//    @Value("${firebase.credential.path}")
-//    private String credentialFile;
+    @Value("${firebase.credential.path}")
+    private String credentialFile;
 
-//    private FirebaseMessaging firebaseMessaging;
+    private FirebaseMessaging firebaseMessaging;
 
     /**
      * Init fire base notifications.
      */
     @Bean
     void initFireBaseNotifications() {
-//        FileInputStream serviceAccount = null;
-//        FirebaseOptions options = null;
-//        try {
-//            serviceAccount = new FileInputStream(credentialFile);
-//            options = new FirebaseOptions.Builder()
-//                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-//                    .setDatabaseUrl("https://zinger-58902.firebaseio.com")
-//                    .build();
-//            FirebaseApp.initializeApp(options);
-//        } catch (Exception e) {
-//            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-//        }
-//        firebaseMessaging = FirebaseMessaging.getInstance();
+        FileInputStream serviceAccount = null;
+        FirebaseOptions options = null;
+        try {
+            serviceAccount = new FileInputStream(credentialFile);
+            options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setDatabaseUrl("https://zinger-58902.firebaseio.com")
+                    .build();
+            FirebaseApp.initializeApp(options);
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        firebaseMessaging = FirebaseMessaging.getInstance();
     }
 
     /**
@@ -61,26 +67,26 @@ public class NotifyDaoImpl implements NotifyDao {
     Response<String> sendMulticast(NotificationModel notificationModel, List<String> fcmTokenList) {
         Response<String> response = new Response<>();
 
-//        try {
-//            MulticastMessage message = MulticastMessage.builder()
-//                    .putData(Constant.notificationTitle, notificationModel.getTitle())
-//                    .putData(Constant.notificationMessage, notificationModel.getMessage())
-//                    .putData(Constant.notificationType, notificationModel.getType().name())
-//                    .putData(Constant.notificationPayload, notificationModel.getPayload())
-//                    .addAllTokens(fcmTokenList)
-//                    .build();
-//
-//            if (firebaseMessaging == null)
-//                firebaseMessaging = FirebaseMessaging.getInstance();
-//            BatchResponse fbResponse = firebaseMessaging.sendMulticast(message);
-//
-//            if (fbResponse.getSuccessCount() > 0) {
-//                response.setCode(ErrorLog.CodeSuccess);
-//                response.setMessage(ErrorLog.Success);
-//            }
-//        } catch (FirebaseMessagingException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            MulticastMessage message = MulticastMessage.builder()
+                    .putData(Constant.notificationTitle, notificationModel.getTitle())
+                    .putData(Constant.notificationMessage, notificationModel.getMessage())
+                    .putData(Constant.notificationType, notificationModel.getType().name())
+                    .putData(Constant.notificationPayload, notificationModel.getPayload())
+                    .addAllTokens(fcmTokenList)
+                    .build();
+
+            if (firebaseMessaging == null)
+                firebaseMessaging = FirebaseMessaging.getInstance();
+            BatchResponse fbResponse = firebaseMessaging.sendMulticast(message);
+
+            if (fbResponse.getSuccessCount() > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+            }
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
         return response;
     }
 
@@ -94,24 +100,24 @@ public class NotifyDaoImpl implements NotifyDao {
      */
     Response<String> sendTopicMessage(NotificationModel notificationModel, String topic) {
         Response<String> response = new Response<>();
-//        try {
-//            Message message = Message.builder()
-//                    .putData(Constant.notificationTitle, notificationModel.getTitle())
-//                    .putData(Constant.notificationMessage, notificationModel.getMessage())
-//                    .putData(Constant.notificationType, notificationModel.getType().name())
-//                    .putData(Constant.notificationPayload, notificationModel.getPayload())
-//                    .setTopic(topic)
-//                    .build();
-//
-//            if (firebaseMessaging == null)
-//                firebaseMessaging = FirebaseMessaging.getInstance();
-//            firebaseMessaging.send(message);
-//
-//            response.setCode(ErrorLog.CodeSuccess);
-//            response.setMessage(ErrorLog.Success);
-//        } catch (FirebaseMessagingException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Message message = Message.builder()
+                    .putData(Constant.notificationTitle, notificationModel.getTitle())
+                    .putData(Constant.notificationMessage, notificationModel.getMessage())
+                    .putData(Constant.notificationType, notificationModel.getType().name())
+                    .putData(Constant.notificationPayload, notificationModel.getPayload())
+                    .setTopic(topic)
+                    .build();
+
+            if (firebaseMessaging == null)
+                firebaseMessaging = FirebaseMessaging.getInstance();
+            firebaseMessaging.send(message);
+
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
 
         return response;
     }
